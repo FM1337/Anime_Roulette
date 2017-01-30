@@ -8,7 +8,7 @@ import webbrowser
 def roulette(u_id):
     a_list = list()
     streamlinks_list = list()
-    anime_list = requests.get("https://kitsu.io/api/edge/users/{}/library-entries?page[limit]=1000?filter[status]=planned".format(u_id)).json()
+    anime_list = requests.get("https://kitsu.io/api/edge/users/{}/library-entries?page[limit]=1000&filter[status]=planned".format(u_id)).json()
     for anime in anime_list['data']:
         a_list.append(anime['relationships']['anime']['links']['related'])
     while(True):
@@ -20,10 +20,13 @@ def roulette(u_id):
             try:
                 while(True):
                     random_url = random.choice(streamlinks_list)
-                    stream_service = input('is {uri.scheme}://{uri.netloc} okay?'.format(uri=urlparse(random_url)))
-                    if stream_service.lower() == "yes":
+                    stream_service = input('is {uri.scheme}://{uri.netloc} okay? (type exit to cancel this choice)'.format(uri=urlparse(random_url)))
+                    if stream_service.lower() in ('yes', 'yeah', 'sure', 'okay', 'ok', 'ya', 'hell yeah', 'why not', 'y', 'yup'):
                         print("Okay :)")
                         webbrowser.open_new(random_url)
+                        break
+                    elif stream_service.lower() == 'exit':
+                        print("okay!")
                         break
                     else:
                         print("Alright then...")
@@ -39,7 +42,7 @@ def roulette(u_id):
         except:
             print("Oh dear, looks like a problem occured, error details {}.")
             keep_going = input("Would you like to keep trying/keep going?")
-            if keep_going in ('yes', 'yeah', 'sure', 'okay', 'ok', 'ya', 'hell yeah', 'why not', 'y', 'yup'):
+            if keep_going.lower() in ('yes', 'yeah', 'sure', 'okay', 'ok', 'ya', 'hell yeah', 'why not', 'y', 'yup'):
                 print("Alrighty!")
             else:
                 print("Cya!")
@@ -51,6 +54,19 @@ def get_user_id(username):
     return user_information['data'][0]['id']
 
 
-kitsu_username = input("Please enter your kistu username ")  # Ask for Kitsu username
-user_id = get_user_id(kitsu_username)  # Pass it to the function that'll get the ID
-roulette(user_id)  # Pass the newly returned ID to the roulette function
+choice = input("Would like to select your list from Kitsu.io or try the random picker from Crunchyroll? (cr for crunchyroll, ki for kitsu) ")
+if choice.lower() == 'cr':
+    while(True):
+        webbrowser.open_new('http://www.crunchyroll.com/random/anime?random_ref=topbar')
+        again = input("Would you like to watch another random anime?")
+        if again.lower() in ('yes', 'yeah', 'sure', 'okay', 'ok', 'ya', 'hell yeah', 'why not', 'y', 'yup'):
+            print("Okay here we go!")
+        else:
+            print("Okay cya!")
+            break
+elif choice.lower() == 'ki':
+    kitsu_username = input("Please enter your kistu username ")  # Ask for Kitsu username
+    user_id = get_user_id(kitsu_username)  # Pass it to the function that'll get the ID
+    roulette(user_id)  # Pass the newly returned ID to the roulette function
+else:
+    print("This is not a correct choice!")
