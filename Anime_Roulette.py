@@ -8,7 +8,7 @@ import webbrowser
 def roulette(u_id):
     a_list = list()
     streamlinks_list = list()
-    anime_list = requests.get("https://kitsu.io/api/edge/users/{}/library-entries?page[limit]=1000".format(u_id)).json()
+    anime_list = requests.get("https://kitsu.io/api/edge/users/{}/library-entries?page[limit]=1000?filter[status]=planned".format(u_id)).json()
     for anime in anime_list['data']:
         a_list.append(anime['relationships']['anime']['links']['related'])
     while(True):
